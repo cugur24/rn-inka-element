@@ -257,7 +257,7 @@ export default class ModalBottomSheet extends Component<Props> {
             paddingBottom: 8,
           }}>
             {confirmButton}
-            {cancelButton}
+            {/*cancelButton*/}
           </View>) : null}
           <KeyboardAvoidingView
             behavior="position"
@@ -282,7 +282,7 @@ export default class ModalBottomSheet extends Component<Props> {
               paddingBottom: 8,
             }}>
               {confirmButton}
-              {cancelButton}
+              {/*cancelButton*/}
             </View>) : null}
           </KeyboardAvoidingView>
         );
@@ -390,7 +390,7 @@ export default class ModalBottomSheet extends Component<Props> {
                         paddingBottom: 8,
                       }}>
                         {confirmButton}
-                        {cancelButton}
+                        {/*cancelButton*/}
                       </View>) : null}
                     </KeyboardAvoidingView>
                   </View>

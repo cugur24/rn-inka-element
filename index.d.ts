@@ -43,6 +43,15 @@ export interface ModalBottomSheetProps {
     enableInput?: boolean,
     /** Callback when input text change, use for search & filter function */
     onChangeText?(text: string),
+        /** Defines maximum input sizes */
+        maxInput?:number
+        /** Clears input field
+         * @description for use invert boolean value from local state
+         * @example this.setState({clearNumpadInput:!this.state.clearNumpadInput})
+         * @default false
+        */
+        clearInput:boolean,
+    
 }
 
 export class ModalBottomSheet extends React.Component<ModalBottomSheetProps, any> { }
@@ -52,14 +61,14 @@ export interface ModalNumberPadProps extends ModalBottomSheetProps {
      * Callback function to receive new value of number pad. You need change your store value here to update value to number pad
      * @param value new value
      */
-    onValueChange(value: number): void,
-    // Default value will display on pad
-    valueInit: number,
-    /**
-     * Callback function when user press OK, note that if you def this props, a default button OK will render
-     * @param value Number user have typed
-     */
-    onConfirm?(value: number): void,
+     onValueChange(value: string): void,
+     // Default value will display on pad
+     valueInit: string,
+     /**
+      * Callback function when user press OK, note that if you def this props, a default button OK will render
+      * @param value Number user have typed
+      */
+     onConfirm?(value: string): void,
 }
 
 export class ModalNumberPad extends React.Component<ModalNumberPadProps, any> { }

@@ -12,7 +12,7 @@ import {
   Platform,
   KeyboardAvoidingView
 } from 'react-native';
-import Ionicon from 'react-native-vector-icons/Ionicons';
+import Ionicon from 'react-native-vector-icons/FontAwesome5';
 import { ModalBottomSheet } from 'rn-inka-element';
 
 export default class ModalNumberPad extends Component {
@@ -23,9 +23,10 @@ export default class ModalNumberPad extends Component {
         [{ value: '1', action: '1' }, { value: '2', action: '2' }, { value: '3', action: '3' }],
         [{ value: '4', action: '4' }, { value: '5', action: '5' }, { value: '6', action: '6' }],
         [{ value: '7', action: '7' }, { value: '8', action: '8' }, { value: '9', action: '9' }],
-        [{ value: '.000', action: '.000' }, { value: '0', action: '0' }, { value: 'DEL', action: 'del' }],
+        [{ value: '', action: '' }, { value: '0', action: '0' }, { value: 'SİL', action: 'del' }],
       ],
-      value: '0'
+      value: '0',
+      clearInput:props.clearInput
     }
   }
 
@@ -37,17 +38,22 @@ export default class ModalNumberPad extends Component {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    this.resetInitNumber();
+    // this.resetInitNumber();
   }
 
   resetInitNumber() {
     if (this.props.valueInit) {
-      this.setState({ value: this.props.valueInit.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") })
+      this.setState({ value: this.props.valueInit.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "") })
     } else {
-      this.setState({ value: '0' })
+      this.setState({ value: ' ' })
     }
   }
 
+  componentDidUpdate(nextProps,actualState){
+    if(nextProps.clearInput!= actualState.clearInput){
+        this.setState({ value:'',clearInput:nextProps.clearInput})
+    }
+  }
   onNumberKeyPress(action) {
     let data = this.state.value.toString().split(' ').join('');
 
@@ -63,7 +69,7 @@ export default class ModalNumberPad extends Component {
       case '8':
       case '9':
         data = data + action;
-        data = parseInt(data);
+        //data = parseInt(data);
         break;
       case '.000':
         data = parseInt(data) * 1000;
@@ -73,14 +79,17 @@ export default class ModalNumberPad extends Component {
         break;
     }
     if (!data || data === '') {
-      data = '0';
+      data = '';
     }
     if (parseInt(data) > 999999999999) {
       data = '999999999999';
     }
-    const value = data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    !this.props.onValueChange || this.props.onValueChange(value);
-    this.setState({ value: value })
+    const value = data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "");
+    if(value.length <= (this.props.maxInput != null ? this.props.maxInput : 6)) {
+      this.setState({ value: value })
+      this.props.onValueChange || this.props.onValueChange(value);      
+    }
+
   }
 
   render() {
@@ -94,13 +103,12 @@ export default class ModalNumberPad extends Component {
       onCancel,
     } = this.props;
     const keyboard = this.state.keyboard;
-
     return (
       <ModalBottomSheet
         {...this.props}
         onConfirm={() => {
           const value = this.state.value.toString().split(' ').join('');
-          !onConfirm || onConfirm(parseInt(value))
+          !onConfirm || onConfirm(value)
         }}
         enableScroll={true}
         renderContent={() => (
@@ -116,11 +124,11 @@ export default class ModalNumberPad extends Component {
                 <Text style={[styles.modal_datetime_block_text1, { color: '#0377fc' }]}>{this.state.value}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={{ paddingVertical: 4, paddingHorizontal: 10 }} onPress={() => {
-                this.setState({ value: '0' })
-                !this.props.onValueChange || this.props.onValueChange('0')
+                this.setState({ value: '' })
+                !this.props.onValueChange || this.props.onValueChange('')
               }}>
                 <Ionicon
-                  name='ios-close-circle'
+                  name='times-circle'
                   color='#ababab'
                   size={18}
                 />
@@ -133,7 +141,13 @@ export default class ModalNumberPad extends Component {
               }} key={index}>
                 {keys.map((key, i) => (
                   <TouchableOpacity style={styles.modal_datetime_key_container} onPress={() => this.onNumberKeyPress(key.action)} key={key.action}>
-                    <Text style={[styles.modal_datetime_key_text, { fontSize: ['.000', 'ok'].includes(key.action) ? 18 : 23 }]}>{key.value}</Text>
+                    { key.action == 'del' ? (
+                       <Ionicon
+                       name='backspace'
+                       color='#ababab'
+                       size={18}
+                     />
+                    ) : (<Text style={[styles.modal_datetime_key_text, { fontSize: ['.000', 'ok'].includes(key.action) ? 18 :20 }]}>{key.value}</Text>)} 
                   </TouchableOpacity>
                 ))}
               </View>
@@ -210,7 +224,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignContent: 'center',
     paddingHorizontal: 4,
-    paddingVertical: 13,
+    paddingVertical: 17,
     flex: 1
   },
   modal_datetime_key_text: {
